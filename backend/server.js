@@ -4,6 +4,7 @@ const User = require("./models/userModel");
 const jwt = require('jsonwebtoken')
 const zod = require('zod')
 const userSchema = require('./schemas/userRegisterSchema')
+const authMiddleware = require('./middleware/authMiddleware')
 const { default: mongoose } = require("mongoose");
 require("dotenv").config();
 const app = express();
@@ -129,6 +130,14 @@ app.post('/login', async (req, res) => {
   }
   res.json(user.password)
 })
+
+app.post('/cards', authMiddleware, async(req, res) => {
+
+  res.json({
+    msg : "cards"
+  })
+})
+
 
 
 
