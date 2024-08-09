@@ -1,9 +1,11 @@
 const mongoose = require("mongoose");
+const { required } = require("../schemas/userRegisterSchema");
 const {Schema} = mongoose
 
 // Define the Mongoose schema for cards
 const cardSchema = mongoose.Schema(
   {
+    BankName : {type : String, required:true},
     cardNumber: { type: String, required: true, unique: true },
     cardHolderName: { type: String, required: true },
     expiryDate: { type: String, required: true },
