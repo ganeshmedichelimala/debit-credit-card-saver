@@ -17,5 +17,4 @@ The Card Management System is a secure and efficient tool designed to help users
 1. **Clone the Repository:**
    ```bash
    git clone https://github.com/yourusername/card-management-system.git
-   cd card-management-system
 ****
