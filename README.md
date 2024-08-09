@@ -1,19 +1,21 @@
-# Debit/Credit Card Info Saver
+# **Card Management System**
 
-## Introduction
+## **Introduction**
 
-The Debit/Credit Card Info Saver is a tool designed to securely store and manage your debit and credit card information. It provides a convenient way to keep track of your cards while ensuring your data is protected.
+The Card Management System is a secure and efficient tool designed to help users manage their debit and credit card information. It allows users to store, retrieve, and manage card details with ease. Additionally, the system supports friend connections, enabling users to verify and share card details with their friends securely.
 
-## Features
+## **Features**
 
-- **Secure Storage**: Encrypts card information to keep it safe.
-- **Easy Retrieval**: Quickly access card details when needed.
-- **User-Friendly Interface**: Simple and intuitive design.
-- **Multi-Card Support**: Store multiple cards with ease.
-- **Automatic Backup**: Backup your card data regularly.
+- **User Registration & Authentication**: Users can securely register and log in to their accounts using encrypted passwords.
+- **Card Management**: Easily add, retrieve, and manage your debit and credit card information.
+- **Friend Connections**: Send and accept friend requests to share card information with trusted users.
+- **Secure Data Handling**: Uses Zod for data validation and bcrypt for password encryption to ensure the safety and integrity of user information.
+- **Access Control**: Authentication middleware ensures that only authorized users can access and manage their card details.
 
-## Installation
+## **Installation**
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/yourusername/card-info-saver.git
+   git clone https://github.com/yourusername/card-management-system.git
+   cd card-management-system
+****
