@@ -15,7 +15,15 @@ const cardSchema = zod.object({
       /^(0[1-9]|1[0-2])\/[0-9]{2}$/,
       "Expiry date must be in MM/YY format"
     ), // Ensure the expiry date is in MM/YY format
-  user : zod.string()
+  bankName: zod
+    .string()
+    .min(1, "Bank name is required") // Ensure the bank name is not empty
+    .max(50, "Bank name is too long"), // Limit the bank name length
+  cardLimit: zod
+    .number()
+    .positive("Card limit must be a positive number") // Ensure the card limit is positive
+    .max(1000000, "Card limit cannot exceed 1,000,000"), // Limit the maximum card limit
+  user: zod.string(), // User ID (assuming it's an ObjectId in string format)
 });
 
 module.exports = cardSchema;

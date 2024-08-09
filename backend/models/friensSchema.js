@@ -1,11 +1,30 @@
-const mongoose = require('mongoose')
-const { required } = require('../schemas/userRegisterSchema')
+const mongoose = require('mongoose');
 
+// Define the schema for friend relationships
 const friendsSchema = new mongoose.Schema({
-  user1 : {type :mongoose.Schema.Types.ObjectId, ref : "User", required:true},
-  user2 : {type :mongoose.Schema.Types.ObjectId, ref : "User", required:true},
-  status : {type : String, enum :["requested", "accpeted", "pending"], default : "pending"}
-},{timestamps : true});
+  // The first user in the friend relationship
+  user1: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', 
+    required: true 
+  },
+  
+  // The second user in the friend relationship
+  user2: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', 
+    required: true 
+  },
+  
+  // The status of the friendship
+  status: { 
+    type: String, 
+    enum: ['requested', 'accepted', 'pending'], 
+    default: 'pending' 
+  }
+}, { timestamps: true }); // Automatically manage createdAt and updatedAt fields
 
-const Friends = new mongoose.model("Friends", friendsSchema)
-module.exports = Friends
+// Create and export the model based on the schema
+const Friend = mongoose.model('Friend', friendsSchema);
+
+module.exports = Friends;

@@ -1,6 +1,5 @@
 const express = require("express");
-const mongoose = require("mongoose");
-const connectDB = require("./config/db");
+const connectDB = require("./config/db"); // Ensure this module exports a function to connect to DB
 const authRoutes = require("./routes/authRoutes");
 const cardRoutes = require("./routes/cardRoutes");
 const cors = require("cors");
@@ -12,15 +11,15 @@ const app = express();
 connectDB();
 
 // Middleware
-app.use(express.json());
-app.use(cors());
+app.use(express.json()); // Parse JSON bodies
+app.use(cors()); // Enable Cross-Origin Resource Sharing
 
 // Routes
-app.use("/api/auth", authRoutes);
-app.use("/api", cardRoutes);
+app.use("/api/auth", authRoutes); // Authentication routes
+app.use("/api/cards", cardRoutes); // Card-related routes
 
 // Start Server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

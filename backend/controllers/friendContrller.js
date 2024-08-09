@@ -1,11 +1,13 @@
 const User = require("../models/userModel");
 const FriendRequest = require("../models/friendRequestModel");
 
+// Send a friend request
 exports.sendFriendRequest = async (req, res) => {
   const requesterId = req.user.id;
   const { recipientEmail } = req.body;
 
   try {
+    // Find recipient user by email
     const recipientUser = await User.findOne({ email: recipientEmail });
     if (!recipientUser) {
       console.log("Error: Recipient user not found", { recipientEmail });
@@ -13,6 +15,7 @@ exports.sendFriendRequest = async (req, res) => {
     }
     const recipientId = recipientUser._id.toString();
 
+    // Check if a friend request already exists
     const existingRequest = await FriendRequest.findOne({
       requester: requesterId,
       recipient: recipientId,
@@ -25,6 +28,7 @@ exports.sendFriendRequest = async (req, res) => {
       return res.status(400).json({ message: "Friend request already sent" });
     }
 
+    // Create and save a new friend request
     const friendRequest = new FriendRequest({
       requester: requesterId,
       recipient: recipientId,
@@ -44,11 +48,13 @@ exports.sendFriendRequest = async (req, res) => {
   }
 };
 
+// Accept a friend request
 exports.acceptFriendRequest = async (req, res) => {
   const recipientId = req.user.id;
   const { requesterEmail } = req.body;
 
   try {
+    // Find requester user by email
     const requesterUser = await User.findOne({ email: requesterEmail });
     if (!requesterUser) {
       console.log("Error: Requester user not found", { requesterEmail });
@@ -56,9 +62,10 @@ exports.acceptFriendRequest = async (req, res) => {
     }
     const requesterId = requesterUser._id.toString();
 
+    // Find and update the friend request status
     const friendRequest = await FriendRequest.findOne({
-      requester: recipientId,
-      recipient: requesterId,
+      requester: requesterId,
+      recipient: recipientId,
     });
     if (!friendRequest) {
       console.log("Error: Friend request not found", {
@@ -68,9 +75,11 @@ exports.acceptFriendRequest = async (req, res) => {
       return res.status(404).json({ message: "Friend request not found" });
     }
 
+    // Accept the friend request
     friendRequest.status = "accepted";
     await friendRequest.save();
 
+    // Add each other to friends list
     await User.findByIdAndUpdate(recipientId, {
       $addToSet: { friends: requesterId },
     });
@@ -86,6 +95,7 @@ exports.acceptFriendRequest = async (req, res) => {
   }
 };
 
+// Check if a given email belongs to a friend
 exports.friendCard = async (req, res) => {
   const { friendEmail } = req.query;
   if (!friendEmail) {
@@ -99,6 +109,7 @@ exports.friendCard = async (req, res) => {
   }
 
   try {
+    // Find friend user by email
     const friend = await User.findOne({ email: friendEmail });
     if (!friend) {
       console.log(`Error: Friend with email ${friendEmail} not found.`);
@@ -109,8 +120,9 @@ exports.friendCard = async (req, res) => {
 
     const friendId = friend._id.toString();
     const currentUserId = req.user.id;
-    const currentUser = await User.findById(currentUserId);
 
+    // Find current user
+    const currentUser = await User.findById(currentUserId);
     if (!currentUser) {
       console.log(`Error: Current user with ID ${currentUserId} not found.`);
       return res.status(404).json({
@@ -127,7 +139,7 @@ exports.friendCard = async (req, res) => {
 
     if (isFriends) {
       console.log("They are friends. Returning friend's details.");
-      // Respond with success message or friend's details if necessary
+      // Respond with friend's details if necessary
       return res.status(200).json({ message: "They are friends", friend });
     } else {
       console.log("They are not friends.");
@@ -135,7 +147,7 @@ exports.friendCard = async (req, res) => {
       return res.status(200).json({ message: "They are not friends" });
     }
   } catch (err) {
-    // Handle any errors that occur during the process
+    // Handle any errors during the process
     console.error("Error fetching friend details:", err.message);
     return res.status(500).json({ message: "Error fetching friend details" });
   }

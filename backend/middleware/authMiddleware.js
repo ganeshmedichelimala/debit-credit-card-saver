@@ -1,7 +1,9 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
+// Middleware function to authenticate requests using JWT
 function authMiddleware(req, res, next) {
-  const authHeader = req.headers['authorization'];
+  // Retrieve the Authorization header from the request
+  const authHeader = req.headers["authorization"];
 
   // Log the incoming request's authorization header
   console.log("Authorization header received:", authHeader);
@@ -9,17 +11,19 @@ function authMiddleware(req, res, next) {
   // Check if the Authorization header is missing
   if (!authHeader) {
     console.log("Error: Authorization header missing");
-    return res.status(401).json({ message: 'Authorization header missing' });
+    return res.status(401).json({ message: "Authorization header missing" });
   }
 
   // Check if the Authorization header starts with 'Bearer '
-  if (!authHeader.startsWith('Bearer ')) {
+  if (!authHeader.startsWith("Bearer ")) {
     console.log("Error: Authorization header format is incorrect");
-    return res.status(401).json({ message: 'Authorization header format is incorrect' });
+    return res
+      .status(401)
+      .json({ message: "Authorization header format is incorrect" });
   }
 
   // Extract the token from 'Bearer <token>'
-  const token = authHeader.split(' ')[1];
+  const token = authHeader.split(" ")[1];
   console.log("Extracted token:", token);
 
   try {
@@ -30,12 +34,14 @@ function authMiddleware(req, res, next) {
     // Attach decoded user data to the request object
     req.user = decoded;
 
-    // Call next middleware or route handler
+    // Call the next middleware or route handler
     next();
   } catch (err) {
     // Handle invalid or expired token
     console.error("Error verifying token:", err.message);
-    res.status(401).json({ message: 'Invalid or expired token', error: err.message });
+    return res
+      .status(401)
+      .json({ message: "Invalid or expired token", error: err.message });
   }
 }
 
