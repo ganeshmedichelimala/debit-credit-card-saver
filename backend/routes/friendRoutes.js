@@ -5,14 +5,17 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 // Route to send a friend request
 // POST /api/friends/request
-router.post("/friends/request", authMiddleware, friendController.sendFriendRequest);
+router.post("/request", authMiddleware, friendController.sendFriendRequest);
 
 // Route to accept a friend request
 // POST /api/friends/accept
-router.post("/friends/accept", authMiddleware, friendController.acceptFriendRequest);
+router.post("/accept", authMiddleware, friendController.acceptFriendRequest);
 
 // Route to get friend card details
 // GET /api/friends/cards
-router.get("/friends/cards", authMiddleware, friendController.friendCard);
+router.get("/cards", authMiddleware, friendController.friendCard);
+
+
+router.get("/list", authMiddleware, friendController.friends)
 
 module.exports = router;

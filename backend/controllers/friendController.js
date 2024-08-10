@@ -98,23 +98,20 @@ exports.acceptFriendRequest = async (req, res) => {
 // Check if a given email belongs to a friend
 exports.friendCard = async (req, res) => {
   const { friendEmail } = req.query;
+
+  // Check if 'friendEmail' is provided
   if (!friendEmail) {
-    console.log(
-      "Error: 'friendEmail' query parameter is required. Example: /friends/cards?friendEmail=example@example.com"
-    );
     return res.status(400).json({
-      message:
-        "friendEmail query parameter is required. Example: /friends/cards?friendEmail=example@example.com",
+      message: "The 'friendEmail' query parameter is required."
     });
   }
 
   try {
-    // Find friend user by email
+    // Find friend by email
     const friend = await User.findOne({ email: friendEmail });
     if (!friend) {
-      console.log(`Error: Friend with email ${friendEmail} not found.`);
       return res.status(404).json({
-        message: `Friend with email ${friendEmail} not found.`,
+        message: `Friend with email ${friendEmail} not found.`
       });
     }
 
@@ -124,31 +121,51 @@ exports.friendCard = async (req, res) => {
     // Find current user
     const currentUser = await User.findById(currentUserId);
     if (!currentUser) {
-      console.log(`Error: Current user with ID ${currentUserId} not found.`);
       return res.status(404).json({
-        message: `Current user with ID ${currentUserId} not found.`,
+        message: `Current user with ID ${currentUserId} not found.`
       });
     }
 
-    console.log("Current user's friends list:", currentUser.friends);
-
     // Check if the friend is in the current user's friends list
-    const isFriends = currentUser.friends.some(
-      (f) => f.toString() === friendId
+    const isFriends = currentUser.friends.includes(friendId);
+
+    return res.status(200).json({
+      message: isFriends ? "They are friends" : "They are not friends",
+      friend: isFriends ? friend : null
+    });
+  } catch (err) {
+    return res.status(500).json({ message: "Error fetching friend details" });
+  }
+};
+
+exports.friends = async (req, res) => {
+  try {
+    const currentUser = req.user;
+    const currentUserId = currentUser.id;
+
+    // Find all accepted friend requests involving the current user
+    const friendRequests = await FriendRequest.find({
+      $or: [
+        { requester: currentUserId, status: "accepted" },
+        { recipient: currentUserId, status: "accepted" }
+      ]
+    });
+
+    // Collect unique friend IDs
+    const friendIds = new Set(
+      friendRequests.flatMap(request =>
+        [request.requester, request.recipient]
+      ).filter(id => id.toString() !== currentUserId.toString())
     );
 
-    if (isFriends) {
-      console.log("They are friends. Returning friend's details.");
-      // Respond with friend's details if necessary
-      return res.status(200).json({ message: "They are friends", friend });
-    } else {
-      console.log("They are not friends.");
-      // Respond with appropriate message
-      return res.status(200).json({ message: "They are not friends" });
-    }
-  } catch (err) {
-    // Handle any errors during the process
-    console.error("Error fetching friend details:", err.message);
-    return res.status(500).json({ message: "Error fetching friend details" });
+    // Fetch details for each friend ID
+    const friends = await User.find({ _id: { $in: Array.from(friendIds) } });
+
+    // Map friends to their names
+    const friendsDetails = friends.map(friend => friend.name);
+
+    return res.status(200).json({ friends: friendsDetails });
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
 };
